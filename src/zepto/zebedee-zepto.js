@@ -51,7 +51,9 @@ var zebedee = (function(container,options){
 	};
 	
 	this.open = function(el){
-		$(el).addClass(this.options.classNames.handleActive).next().show();
+		var maxHeight = $(el).height();
+		$(el).addClass(this.options.classNames.handleActive).next().css('height','0').show().anim({},1,'ease-out');
+		//$(el).next().css('height','100px');
 	};
 	
 	this.close = function(el){
@@ -76,7 +78,7 @@ var zebedee = (function(container,options){
 	$('#' + this._container.attr('id')+ '>.' + this.options.classNames.handle).bind(this.options.trigger,this.toggle);
 		
 	$('.' + this.options.classNames.content).hide();
-	
+	$('.' + this.options.classNames.content).anim({}, 1, 'ease-out');
 	
 	
 	return this
