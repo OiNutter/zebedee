@@ -3,29 +3,25 @@
  */
 var zebedee = (function(container,options){
 	
+	var _scope = this;
+		
 	if(typeof container == 'string')
 		container = '#' + container;
 	
 	if(!$(container))
 		throw new Exception('Element ' + container + " does not exist!");
-		
-	this.options = this._merge({
-		classNames: {
-			handle: 'zebedee-handle',
-			handleActive: 'zebedee-active',
-			content: 'zebedee-content'
-		},
-		linkElement:null,
-		direction: vertical,
-		duration:3,
-		trigger:'touchstart'
-	},options);
-		
+	
+	this._container = $(container);
+	
 	//utility methods
 	this._getObjVars = function(obj){
+		if (typeof obj !== 'Object')
+			return [];
+			
 		var vars = [];
 	    for (var prop in obj)
 	      vars.push(obj[prop]);
+	    console.log(vars)
 	    return vars;
 	}
 	
@@ -42,14 +38,46 @@ var zebedee = (function(container,options){
 		return destination;
 	};
 	
+	//public members
+	this.toggle = function(e){
+		var open = $('#' + _scope._container.attr('id') + ">." + _scope.options.classNames.handleActive).get(0);
+		if(open !== 'undefined' && open!=e.currentTarget)
+			_scope.close($('#' + _scope._container.attr('id') + ">." + _scope.options.classNames.handleActive).get(0));
+		if($(e.currentTarget).hasClass(_scope.options.classNames.handleActive))
+			_scope.close(e.currentTarget);
+		else
+			_scope.open(e.currentTarget);
+			
+	};
+	
+	this.open = function(el){
+		$(el).addClass(this.options.classNames.handleActive).next().show();
+	};
+	
+	this.close = function(el){
+		$(el).removeClass(this.options.classNames.handleActive).next().hide();
+	};
+	
+	//initialize options
+	this.options = this._merge({
+		classNames: {
+			handle: 'zebedee-handle',
+			handleActive: 'zebedee-active',
+			content: 'zebedee-content'
+		},
+		linkElement:null,
+		direction: 'vertical',
+		duration:3,
+		trigger:'touchend'
+	},options);
+		
 	//initialize accordion
 	//set up handles
-	$('.' + this.options.classNames.handle,$(container)).live('touchend',this.open)
+	$('#' + this._container.attr('id')+ '>.' + this.options.classNames.handle).bind(this.options.trigger,this.toggle);
+		
+	$('.' + this.options.classNames.content).hide();
 	
-	//public members
-	return {
-		this.open = function(){};
-		this.close = function(){};
-	}
 	
+	
+	return this
 });
