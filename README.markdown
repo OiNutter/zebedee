@@ -50,6 +50,27 @@ Zebedee has the following configurable options:
 * transition \- `'ease-out'`
 * trigger \- `'touchend'`
 
+Versions
+--------
+
+### Scriptaculous ###
+Coming Soon
+
+### Scripty 2 ###
+Coming Soon
+
+### Zepto ###
+The zepto version of zebedee uses Thomas Fuchs' lightweight, mobile targeting, [zepto](http://zeptojs.org) library.  I'm primarily taking 
+advantage of the dom functions and the chaining to keep my code down.  The event functions also came in handy for dealing with the toggling 
+of the accordion blocks.
+
+Because this is using zepto and I'm intending it for the Mobile, Webkit based browsers, I was able to take advantage of the `anim()` function
+in zepto and use css3 animations for the opening and closing of the content blocks.
+
+One thing to note is that I'm using a custom attribute to store the original height of the content blocks before they're shrunk to use the 
+animation. I've called this data-zebheight so it should be allowed by the HTML5 spec when that gets implemented on Safari.  Until then, unless 
+a better solution presents itself, it's something I'm going to have to live with.
+  
 Notes
 -----
 
