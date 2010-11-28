@@ -28,7 +28,7 @@ def sprocketize(path, source, destination=nil)
   begin
     require "sprockets"
   rescue LoadError => e
-    puts "\nUncharted requires Sprockets to build the files. Just run:\n\n"
+    puts "\nzebedee requires Sprockets to build the files. Just run:\n\n"
     puts "  $ git submodule init"
     puts "  $ git submodule update"
     puts "\nto pull in the necessary submodules.\n\n"
@@ -54,18 +54,25 @@ task :clean do
   mkdir RELEASE_DIR
 end
 
-def dist_from_sources(sources)
-  sprocketize("src", sources, "uncharted.js")
-  cp File.join(ROOT_DIR,'lib','prototype.1.7.0.js'), File.join(DIST_DIR,'prototype.1.7.0.js')
-  cp File.join(ROOT_DIR,'lib','raphael.1.5.2.js'), File.join(DIST_DIR,'raphael.1.5.2.js')
+def dist_from_sources(source)
+ 
+  sprocketize("src", source)
+   
 end
 
 desc "Builds the distribution."
 task :dist => ['dist:default']
 namespace :dist do
-  task :default do
-    dist_from_sources(["uncharted.js"])
+  
+  task :default => ['dist:zepto']
+   
+  task :zepto do
+    mkdir File.join(DIST_DIR,'zepto')
+    mkdir File.join(RELEASE_DIR,'zepto')
+    dist_from_sources(['zepto/zebedee.js'])
+    cp File.join(ROOT_DIR,'lib','zepto.js'), File.join(DIST_DIR,'zepto','zepto.js')
   end
+  
 end
 
 def minify(src, target, compressor = 'yui')
@@ -89,33 +96,50 @@ def minify(src, target, compressor = 'yui')
 end
 
 desc "Generates a minified version of the distribution (using YUI Compressor)."
-task :min do
-  minify File.join(DIST_DIR,'uncharted.js'), File.join(RELEASE_DIR,'uncharted.min.js')
-  minify File.join(ROOT_DIR,'lib','prototype.1.7.0.js'), File.join(RELEASE_DIR,'prototype.1.7.0.min.js')
-  minify File.join(ROOT_DIR,'lib','raphael.1.5.2.js'), File.join(RELEASE_DIR,'raphael.1.5.2.min.js')
+task :min => ['min:default']
+namespace :min do
+  
+   task :default => ['min:zepto']
+  
+   task :zepto do
+      minify File.join(DIST_DIR,'zepto','zebedee.js'), File.join(RELEASE_DIR,'zepto','zebedee.min.js')
+      minify File.join(ROOT_DIR,'lib','zepto.js'), File.join(RELEASE_DIR,'zepto','zepto.min.js')
+   end
 end
 
 desc "Generates a minified version of the distribution (using Google Closure Compiler)."
-task :min_google do
-  minify File.join(DIST_DIR,'uncharted.js'), File.join(RELEASE_DIR,'uncharted.min.js'), 'google'
-  minify File.join(ROOT_DIR,'lib','prototype.1.7.0.js'), File.join(RELEASE_DIR,'prototype.1.7.0.min.js'), 'google'
-  minify File.join(ROOT_DIR,'lib','raphael.1.5.2.js'), File.join(RELEASE_DIR,'raphael.1.5.2.min.js'), 'google'
+task :min_google => ['min_google:default']
+namespace :min_google do 
+  task :default => ['min_google:zepto']
+  
+  task :zepto do
+      minify File.join(DIST_DIR,'zepto','zebedee.js'), File.join(RELEASE_DIR,'zepto','zebedee.min.js'), 'google'
+      minify File.join(ROOT_DIR,'lib','zepto.js'), File.join(RELEASE_DIR,'zepto','zepto.min.js'), 'google'
+  end
 end
 
-def unify_distribution
-  unified = IO.read(File.join(DIST_DIR,'prototype.1.7.0.js')) + IO.read(File.join(DIST_DIR,'raphael.1.5.2.js')) + IO.read(File.join(DIST_DIR,'uncharted.js'))
-  File.open(File.join(DIST_DIR,'pro.raph.uncharted.js'), 'w') do |file|
+def unify_distribution(sources,output)
+  unified = ''
+  for file in sources do
+    unified += IO.read(file)
+  end
+  
+  File.open(File.join(DIST_DIR,output), 'w') do |file|
     file.write unified
   end 
-  minify File.join(DIST_DIR,'pro.raph.uncharted.js'), File.join(RELEASE_DIR,'pro.raph.uncharted.min.js')
+  minify File.join(DIST_DIR,output), File.join(RELEASE_DIR,output.gsub('.js','.min.js'))
 end
 
-desc "Generate a unified minified version of Prototype, Raphael and Uncharted"
+desc "Generate a unified minified version of zebedee"
 task :unified => ['unified:default']
 namespace :unified do
-  task :default => [:dist, :min] do
-    unify_distribution
+  
+  task :default => ['unified:zepto']
+  
+  task :zepto => [:dist, :min] do
+    unify_distribution [File.join(DIST_DIR,'zepto','zepto.js'),File.join(DIST_DIR,'zepto','zebedee.js')], 'zepto/zepto.zebedee.js' 
   end
+
 end
 
 def doc_from_sources(sources)
@@ -124,7 +148,7 @@ def doc_from_sources(sources)
   begin
     require "sprockets"
   rescue LoadError => e
-    puts "\nUncharted requires Sprockets to build the files. Just run:\n\n"
+    puts "\nzebedee requires Sprockets to build the files. Just run:\n\n"
     puts "  $ git submodule init"
     puts "  $ git submodule update"
     puts "\nto pull in the necessary submodules.\n\n"
@@ -151,21 +175,20 @@ def doc_from_sources(sources)
     #end
   end
   
-  cp File.join(ROOT_DIR, 'lib', 'prototype.1.7.0.js'), File.join(DOCUMENTATION_DIR, 'javascripts')
-  cp File.join(ROOT_DIR, 'lib', 'raphael.1.5.2.js'), File.join(DOCUMENTATION_DIR, 'javascripts')
-  cp File.join(DIST_DIR,'uncharted.js'), File.join(DOCUMENTATION_DIR,'javascripts')
+  cp File.join(ROOT_DIR, 'lib', 'zepto.js'), File.join(DOCUMENTATION_DIR, 'javascripts','zepto')
+  cp File.join(DIST_DIR,'zepto','zebedee.js'), File.join(DOCUMENTATION_DIR,'javascripts','zepto')
 end
 
 namespace :doc do
   desc "Builds the documentation."
   task :build => [:require] do
-    doc_from_sources(["uncharted.js"])
+    doc_from_sources(["zepto/zebedee.js"])
   end
   
   task :require do
     lib = 'vendor/pdoc/lib/pdoc'
     unless File.exists?(lib)
-     puts "\nUncharted requires pDoc to build the documentation. Just run:\n\n"
+     puts "\nzebedee requires pDoc to build the documentation. Just run:\n\n"
      puts "  $ git submodule init"
      puts "  $ git submodule update"
      puts "\nto pull in the necessary submodules.\n\n"
@@ -177,7 +200,7 @@ end
 
 task :doc => ['doc:build']
 
-Rake::PackageTask.new('uncharted', VERSION) do |package|
+Rake::PackageTask.new('zebedee', VERSION) do |package|
   package.need_tar_gz = true
   package.need_zip = true
   package.package_dir = PKG_DIR
@@ -191,7 +214,7 @@ Rake::PackageTask.new('uncharted', VERSION) do |package|
 end
 
 task :clean_package_source do
-  rm_rf File.join(PKG_DIR, "uncharted-#{VERSION}")
+  rm_rf File.join(PKG_DIR, "zebedee-#{VERSION}")
 end
 
 task :test => ['test:build', 'test:run']
@@ -245,7 +268,7 @@ namespace :test do
   task :require do
     lib = 'vendor/unittest_js/lib/unittest_js'
     unless File.exists?(lib)
-     puts "\nUncharted requires UnittestJS to run the test. Just run:\n\n"
+     puts "\nzebedee requires UnittestJS to run the test. Just run:\n\n"
      puts "  $ git submodule init"
      puts "  $ git submodule update"
      puts "\nto pull in the necessary submodules.\n\n"
