@@ -77,7 +77,7 @@ var zebedee = (function(container,options){
 	//set up handles
 	$('#' + this._container.attr('id')+ '>.' + this.options.classNames.handle).bind(this.options.trigger,this.toggle);
 	$('.' + this.options.classNames.content).each(function(i){
-		$(i).attr('origHeight',$(i).height());
+		$(i).attr('origHeight',$(i).height()).css('overflow','hidden');
 	});
 	$('.' + this.options.classNames.handle).each(function(i){_scope.close(i)});
 	
