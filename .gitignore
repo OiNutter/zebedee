@@ -1,6 +1,7 @@
 /.settings
 
 .project
+.loadpath
 pkg
 
 test/unit/tmp/*

@@ -12,7 +12,7 @@ var zebedee = (function(container,options){
 		throw new Exception('Element ' + container + " does not exist!");
 	
 	this._container = $(container);
-	
+		
 	//utility methods
 	this._getObjVars = function(obj){
 		if (typeof obj !== 'Object')
@@ -51,13 +51,11 @@ var zebedee = (function(container,options){
 	};
 	
 	this.open = function(el){
-		var maxHeight = $(el).height();
-		$(el).addClass(this.options.classNames.handleActive).next().css('height','0').show().anim({},1,'ease-out');
-		//$(el).next().css('height','100px');
+		$(el).addClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css('height',$(el).next().attr('origHeight')+"px");
 	};
 	
 	this.close = function(el){
-		$(el).removeClass(this.options.classNames.handleActive).next().hide();
+		$(el).removeClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css('height','0px');
 	};
 	
 	//initialize options
@@ -69,17 +67,19 @@ var zebedee = (function(container,options){
 		},
 		linkElement:null,
 		direction: 'vertical',
-		duration:3,
+		duration:1,
+		transition:'ease-out',
 		trigger:'touchend'
 	},options);
 		
 	//initialize accordion
+		
 	//set up handles
 	$('#' + this._container.attr('id')+ '>.' + this.options.classNames.handle).bind(this.options.trigger,this.toggle);
-		
-	$('.' + this.options.classNames.content).hide();
-	$('.' + this.options.classNames.content).anim({}, 1, 'ease-out');
-	
+	$('.' + this.options.classNames.content).each(function(i){
+		$(i).attr('origHeight',$(i).height());
+	});
+	$('.' + this.options.classNames.handle).each(function(i){_scope.close(i)});
 	
 	return this
 });
