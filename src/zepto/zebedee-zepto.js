@@ -51,7 +51,7 @@ var zebedee = (function(container,options){
 	};
 	
 	this.open = function(el){
-		$(el).addClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css('height',$(el).next().attr('origHeight')+"px");
+		$(el).addClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css('height',$(el).next().attr('data-zebheight')+"px");
 	};
 	
 	this.close = function(el){
@@ -77,7 +77,7 @@ var zebedee = (function(container,options){
 	//set up handles
 	$('#' + this._container.attr('id')+ '>.' + this.options.classNames.handle).bind(this.options.trigger,this.toggle);
 	$('.' + this.options.classNames.content).each(function(i){
-		$(i).attr('origHeight',$(i).height()).css('overflow','hidden');
+		$(i).attr('data-zebheight',$(i).height()).css('overflow','hidden');
 	});
 	$('.' + this.options.classNames.handle).each(function(i){_scope.close(i)});
 	
