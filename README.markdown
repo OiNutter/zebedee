@@ -32,7 +32,7 @@ Set up your accordion as follows:
 
 then call
 
-	var zebedee = new zebedee('container');
+	var zbd = new zebedee('container');
 
 You will need to add the following styles to your css `zebedee-handle`, `zebedee-active` and `zebedee-content`.  These can be overridden in 
 the options.
