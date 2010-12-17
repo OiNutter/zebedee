@@ -10,6 +10,9 @@
 			font:12pt Helvetica;
 			margin:0;
 			border-bottom:1px solid #fff;
+			width:20px;
+			height:200px;
+			float:left;
 		}
 		
 		.zebedee-active{
@@ -19,20 +22,23 @@
 		.zebedee-content{
 			background:#ccc;
 			overflow:hidden;
+			width:400px;
+			height:200px;
+			float:left;
 		}
 	</style>
 </head>
 <body>
 	<div id="zebedee">
-		<h1 class="zebedee-handle">Block 1</h1>
+		<div class="zebedee-handle">Block 1</div>
 		<div class="zebedee-content">
 			Example content 1
 		</div>
-		<h1 class="zebedee-handle">Block 2</h1>
+		<div class="zebedee-handle">Block 2</div>
 		<div class="zebedee-content">
 			Example content 2
 		</div>
-		<h1 class="zebedee-handle">Block 3</h1>
+		<div class="zebedee-handle">Block 3</div>
 		<div class="zebedee-content">
 			Example content 3
 		</div>
@@ -41,7 +47,7 @@
 <script type="text/javascript" src="../../../src/zepto/zebedee.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
-		var zeb = new zebedee('zebedee',{trigger:'click'});
+		var zeb = new zebedee('zebedee',{trigger:'click',direction:'horizontal'});
 	});
 </script>
 </body>
