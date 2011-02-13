@@ -108,7 +108,7 @@ var zebedee = (function(container,options){
      * Opens the content block for the handle selected
      **/
 	this.open = function(el){
-		$(el).addClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css('height',$(el).next().attr('data-zebheight')+"px");
+		$(el).addClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css(((this.options.direction=='vertical') ? 'height':'width'),$(el).next().attr('data-zeb' + ((this.options.direction=='vertical') ? 'height':'width'))+"px");
 	};
 	
 	/** section: Zepto
@@ -119,7 +119,7 @@ var zebedee = (function(container,options){
      * Closes the content block for the handle selected
      **/
 	this.close = function(el){
-		$(el).removeClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css('height','0px');
+	 	$(el).removeClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css(((this.options.direction=='vertical') ? 'height':'width'),'0px');
 	};
 	
 	
@@ -170,7 +170,11 @@ var zebedee = (function(container,options){
 	//set up handles
 	$('#' + this._container.attr('id')+ '>.' + this.options.classNames.handle).bind(this.options.trigger,this.toggle);
 	$('.' + this.options.classNames.content).each(function(i){
-		$(i).attr('data-zebheight',$(i).height()).css('overflow','hidden');
+		switch(_scope.options.direction){
+		  case 'vertical' : $(i).attr('data-zebheight',$(i).height()).css('overflow','hidden'); break;
+		  case 'horizontal' : $(i).attr('data-zebwidth',$(i).width()).css('overflow','hidden'); break;
+		}
+		
 	});
 	$('.' + this.options.classNames.handle).each(function(i){_scope.close(i)});
 	
