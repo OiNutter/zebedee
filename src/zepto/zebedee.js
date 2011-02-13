@@ -169,14 +169,14 @@ var zebedee = (function(container,options){
 		
 	//set up handles
 	$('#' + this._container.attr('id')+ '>.' + this.options.classNames.handle).bind(this.options.trigger,this.toggle);
-	$('.' + this.options.classNames.content).each(function(i){
+	$('.' + this.options.classNames.content).each(function(i,el){
 		switch(_scope.options.direction){
-		  case 'vertical' : $(i).attr('data-zebheight',$(i).height()).css('overflow','hidden'); break;
-		  case 'horizontal' : $(i).attr('data-zebwidth',$(i).width()).css('overflow','hidden'); break;
+		  case 'vertical' : $(el).attr('data-zebheight',$(el).height()).css('overflow','hidden'); break;
+		  case 'horizontal' : $(el).attr('data-zebwidth',$(el).width()).css('overflow','hidden'); break;
 		}
 		
 	});
-	$('.' + this.options.classNames.handle).each(function(i){_scope.close(i)});
+	$('.' + this.options.classNames.handle).each(function(i,el){_scope.close(el)});
 	
 	return this
 });
