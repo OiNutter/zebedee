@@ -127,7 +127,7 @@ def unify_distribution(sources,output)
   File.open(File.join(DIST_DIR,output), 'w') do |file|
     file.write unified
   end 
-  minify File.join(DIST_DIR,output), File.join(RELEASE_DIR,output.gsub('.js','.min.js'))
+  minify File.join(DIST_DIR,output), File.join(RELEASE_DIR,output.gsub('.js','.min.js')), 'google'
 end
 
 desc "Generate a unified minified version of zebedee"
@@ -136,7 +136,7 @@ namespace :unified do
   
   task :default => ['unified:zepto']
   
-  task :zepto => [:dist, :min] do
+  task :zepto => [:dist, :min_google] do
     unify_distribution [File.join(DIST_DIR,'zepto','zepto.js'),File.join(DIST_DIR,'zepto','zebedee.js')], 'zepto/zepto.zebedee.js' 
   end
 
@@ -205,7 +205,7 @@ Rake::PackageTask.new('zebedee', VERSION) do |package|
   package.need_zip = true
   package.package_dir = PKG_DIR
   package.package_files.include(
-    'README.markdown',
+    'README.md',
     'BSD-LICENSE',
     'dist/**/*',
     'doc/**/*',
