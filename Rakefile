@@ -64,9 +64,20 @@ desc "Builds the distribution."
 task :dist => ['dist:default']
 namespace :dist do
   
-  task :default => ['dist:zepto']
-   
+  task :default => ['dist:scriptaculous','dist:zepto']
+
+  task :scriptaculous do
+    puts 'Building Scriptaculous Distribution...'
+    mkdir File.join(DIST_DIR,'scriptaculous')
+    mkdir File.join(RELEASE_DIR,'scriptaculous')
+    dist_from_sources(['scriptaculous/zebedee.js'])
+    cp File.join(ROOT_DIR,'lib','prototype.js'), File.join(DIST_DIR,'scriptaculous','prototype.js')
+    cp File.join(ROOT_DIR,'lib','scriptaculous.js'), File.join(DIST_DIR,'scriptaculous','scriptaculous.js')
+    cp File.join(ROOT_DIR,'lib','effects.js'), File.join(DIST_DIR,'scriptaculous','effects.js')
+  end
+
   task :zepto do
+    puts 'Building Zepto Distribution...'
     mkdir File.join(DIST_DIR,'zepto')
     mkdir File.join(RELEASE_DIR,'zepto')
     dist_from_sources(['zepto/zebedee.js'])
@@ -99,9 +110,18 @@ desc "Generates a minified version of the distribution (using YUI Compressor)."
 task :min => ['min:default']
 namespace :min do
   
-   task :default => ['min:zepto']
-  
+   task :default => ['min:scriptaculous','min:zepto']
+
+   task :scriptaculous do
+      puts 'Minifying Scriptaculous Distribution...'
+      minify File.join(DIST_DIR,'scriptaculous','zebedee.js'), File.join(RELEASE_DIR,'scriptaculous','zebedee.min.js')
+      minify File.join(ROOT_DIR,'lib','prototype.js'), File.join(RELEASE_DIR,'scriptaculous','prototype.min.js')
+      minify File.join(ROOT_DIR,'lib','scriptaculous.js'), File.join(RELEASE_DIR,'scriptaculous','scriptaculous.min.js')
+      minify File.join(ROOT_DIR,'lib','effects.js'), File.join(RELEASE_DIR,'scriptaculous','effects.min.js')
+   end  
+
    task :zepto do
+      puts 'Minifying Zepto Distribution...'
       minify File.join(DIST_DIR,'zepto','zebedee.js'), File.join(RELEASE_DIR,'zepto','zebedee.min.js')
       minify File.join(ROOT_DIR,'lib','zepto.js'), File.join(RELEASE_DIR,'zepto','zepto.min.js')
    end
@@ -110,9 +130,19 @@ end
 desc "Generates a minified version of the distribution (using Google Closure Compiler)."
 task :min_google => ['min_google:default']
 namespace :min_google do 
-  task :default => ['min_google:zepto']
+   
+   task :default => ['min_google:scriptaculous','min_google:zepto']
   
+   task :scriptaculous do
+      puts 'Minifying Scriptaculous Distribution...'
+      minify File.join(DIST_DIR,'scriptaculous','zebedee.js'), File.join(RELEASE_DIR,'scriptaculous','zebedee.min.js')
+      minify File.join(ROOT_DIR,'lib','prototype.js'), File.join(RELEASE_DIR,'scriptaculous','prototype.min.js')
+      minify File.join(ROOT_DIR,'lib','scriptaculous.js'), File.join(RELEASE_DIR,'scriptaculous','scriptaculous.min.js')
+      minify File.join(ROOT_DIR,'lib','effects.js'), File.join(RELEASE_DIR,'scriptaculous','effects.min.js')
+   end  
+
   task :zepto do
+      puts 'Minifying Zepto Distribution...'
       minify File.join(DIST_DIR,'zepto','zebedee.js'), File.join(RELEASE_DIR,'zepto','zebedee.min.js'), 'google'
       minify File.join(ROOT_DIR,'lib','zepto.js'), File.join(RELEASE_DIR,'zepto','zepto.min.js'), 'google'
   end
@@ -120,23 +150,31 @@ end
 
 def unify_distribution(sources,output)
   unified = ''
-  for file in sources do
-    unified += IO.read(file)
+  for source in sources do
+    unified += IO.read(source)
   end
   
   File.open(File.join(DIST_DIR,output), 'w') do |file|
     file.write unified
   end 
-  minify File.join(DIST_DIR,output), File.join(RELEASE_DIR,output.gsub('.js','.min.js'))
+
+  minify File.join(DIST_DIR,output), File.join(RELEASE_DIR,output.gsub('.js','.min.js')), 'google'
+
 end
 
 desc "Generate a unified minified version of zebedee"
 task :unified => ['unified:default']
 namespace :unified do
   
-  task :default => ['unified:zepto']
+  task :default => ['unified:scriptaculous','unified:zepto']
+
+  task :scriptaculous => ['dist:scriptaculous', 'min_google:scriptaculous'] do
+    puts 'Unifying Scriptaculous Distribution...'    
+    unify_distribution [File.join(DIST_DIR,'scriptaculous','prototype.js'),File.join(DIST_DIR,'scriptaculous','scriptaculous.js'),File.join(DIST_DIR,'scriptaculous','effects.js'),File.join(DIST_DIR,'scriptaculous','zebedee.js')], 'scriptaculous/pro.script.zebedee.js' 
+  end
   
-  task :zepto => [:dist, :min] do
+  task :zepto => ['dist:zepto', 'min_google:zepto'] do
+    puts 'Unifying Zepto distribution'
     unify_distribution [File.join(DIST_DIR,'zepto','zepto.js'),File.join(DIST_DIR,'zepto','zebedee.js')], 'zepto/zepto.zebedee.js' 
   end
 
@@ -205,7 +243,7 @@ Rake::PackageTask.new('zebedee', VERSION) do |package|
   package.need_zip = true
   package.package_dir = PKG_DIR
   package.package_files.include(
-    'README.markdown',
+    'README.md',
     'BSD-LICENSE',
     'dist/**/*',
     'doc/**/*',

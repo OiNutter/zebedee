@@ -1,47 +1,43 @@
 /**
- * == Zepto ==
+ * == Scriptaculous ==
  * 
  * Version: <%=VERSION%>
  **/
 
-/** section: Zepto
+/** section: Scriptaculous
  * class zebedee
  *
  * creates an accordion widget
  **/
 
-/** section: Zepto
+/** section: Scriptaculous
  * new zebedee(container [, options])
  * 
- * - container (String | HTMLDOMElement | Zepto Object): The containing div for the accordion
+ * - container (String | HTMLDOMElement | Prototype Object): The containing div for the accordion
  * - options (Object): Optional options object for overriding default configuration
  * 
  * Creates a new zebedee accordion
  **/
 var zebedee = (function(container,options){
-	
-    /** section: Zepto
+	/** section: Scriptaculous
      * zebedee._scope -> zebedee
      * 
      * Internal variable to enable event handlers to be executed in the main object's scope
      **/
 	var _scope = this;
-		
-	if(typeof container == 'string')
-		container = '#' + container;
-	
+			
 	if(!$(container))
 		throw new Exception('Element ' + container + " does not exist!");
 	
-    /** section: Zepto
-     * zebedee._container -> Zepto Object
+    /** section: Scriptaculous
+     * zebedee._container -> Scriptaculous Object
      * 
      * Internal reference to container element
      **/
 	this._container = $(container);
 		
 	//utility methods
-    /** section: Zepto
+    /** section: Scriptaculous
      * zebedee._getObjVars(obj) -> Array
      * 
      * - obj (Object) - The object to get the properties of
@@ -52,14 +48,10 @@ var zebedee = (function(container,options){
 		if (typeof obj !== 'Object')
 			return [];
 			
-		var vars = [];
-	    for (var prop in obj)
-	      vars.push(obj[prop]);
-	    console.log(vars)
-	    return vars;
+		return Object.values(obj);
 	}
 	
-    /** section: Zepto
+    /** section: Scriptaculous
      * zebedee._merge(destination,source) -> Object
      * 
      * - destination (Object): The object to have it's properties overridden
@@ -81,7 +73,7 @@ var zebedee = (function(container,options){
 	};
 	
 	//public members
-    /** section: Zepto
+    /** section: Scriptaculous
      * zebedee.toggle(e) -> null
      * 
      * - e (Event): The trigger event for the opening/closing of the accordion
@@ -90,17 +82,16 @@ var zebedee = (function(container,options){
      * either opens or closes the clicked block as necessary.
      **/
 	this.toggle = function(e){
-		var open = $('#' + _scope._container.attr('id') + ">." + _scope.options.classNames.handleActive).get(0);
-		if(open !== 'undefined' && open!=e.currentTarget)
-			_scope.close($('#' + _scope._container.attr('id') + ">." + _scope.options.classNames.handleActive).get(0));
-		if($(e.currentTarget).hasClass(_scope.options.classNames.handleActive))
-			_scope.close(e.currentTarget);
+		var open = $$('#' + _scope._container.identify() + ">." + _scope.options.classNames.handleActive)[0];
+		if(!Object.isUndefined(open) && open!=e.findElement())
+			_scope.close($$('#' + _scope._container.identify() + ">." + _scope.options.classNames.handleActive)[0]);
+		if($(e.findElement()).hasClassName(_scope.options.classNames.handleActive))
+			_scope.close(e.findElement());
 		else
-			_scope.open(e.currentTarget);
-			
+			_scope.open(e.findElement());
 	};
 	
-    /** section: Zepto
+    /** section: Scriptaculous
      * zebedee.open(el) -> null
      * 
      * - el (HTMLDOMElement): The handle clicked
@@ -108,10 +99,21 @@ var zebedee = (function(container,options){
      * Opens the content block for the handle selected
      **/
 	this.open = function(el){
-		$(el).addClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css(((this.options.direction=='vertical') ? 'height':'width'),$(el).next().attr('data-zeb' + ((this.options.direction=='vertical') ? 'height':'width'))+"px");
+		$(el).addClassName(this.options.classNames.handleActive);
+		 
+		var scaleMode = this.options.direction == 'vertical' ? {originalHeight:$(el).next().readAttribute('data-zebheight')} : {originalWidth:$(el).next().readAttribute('data-zebwidth')};
+		new Effect.Scale($(el).next(),100,{
+			duration:this.options.duration,
+			transition: Effect.Transitions[this.options.transition],
+			scaleX: this.options.direction=='horizontal' ? true : false,
+			scaleY: this.options.direction == 'vertical' ? true : false,
+			scaleFrom:0,
+			scaleContent:false,
+			scaleMode:scaleMode
+	 	});
 	};
 	
-	/** section: Zepto
+	/** section: Scriptaculous
      * zebedee.close(el) -> null
      * 
      * - el (HTMLDOMElement): The handle clicked
@@ -119,18 +121,30 @@ var zebedee = (function(container,options){
      * Closes the content block for the handle selected
      **/
 	this.close = function(el){
-	 	$(el).removeClass(this.options.classNames.handleActive).next().anim(null,this.options.duration,this.options.transition).css(((this.options.direction=='vertical') ? 'height':'width'),'0px');
+	 	
+	 	$(el).removeClassName(this.options.classNames.handleActive);
+	 		 	 
+		new Effect.Scale($(el).next(),0,{
+			duration:this.options.duration,
+			transition: Effect.Transitions[this.options.transition],
+			scaleX: this.options.direction=='horizontal' ? true : false,
+			scaleY: this.options.direction == 'vertical' ? true : false,
+			scaleContent:false,
+			scaleFrom:100,
+			scaleMode:{originalHeight:$(el).next().getHeight(),originalWidth:$(el).next().getWidth()}
+	 	});
+	 
 	};
 	
 	
 	//initialize options
-    /** section: Zepto
+    /** section: Scriptaculous
      * zebedee.options
      * 
      * Contains the configuration details for the current accordion
      **/
 	this.options = this._merge({
-        /** section: Zepto
+        /** section: Scriptaculous
          * zebedee.options.classNames -> Object
          * 
          * Defines the default css classes for the accordion components.  Has 3 properties
@@ -145,19 +159,19 @@ var zebedee = (function(container,options){
 		},
 		linkElement:null,
 		direction: 'vertical',
-        /** section: Zepto
+        /** section: Scriptaculous
          * zebedee.options.duration -> Number
          * 
          * Defines the duration of the opening/closing animation.
          **/
 		duration:1,
-		/** section: Zepto
+		/** section: Scriptaculous
          * zebedee.options.transition -> String
          * 
          * Defines the animation effect used in the opening/closing animation.
          **/
-		transition:'ease-out',
-		/** section: Zepto
+		transition:'sinoidal',
+		/** section: Scriptaculous
          * zebedee.options.trigger -> String
          * 
          * Defines the event that triggers the opening/closing of blocks. 
@@ -168,15 +182,20 @@ var zebedee = (function(container,options){
 	//initialize accordion
 		
 	//set up handles
-	$('#' + this._container.attr('id')+ '>.' + this.options.classNames.handle).bind(this.options.trigger,this.toggle);
-	$('.' + this.options.classNames.content).each(function(i,el){
-		switch(_scope.options.direction){
-		  case 'vertical' : $(el).attr('data-zebheight',$(el).height()).css('overflow','hidden'); break;
-		  case 'horizontal' : $(el).attr('data-zebwidth',$(el).width()).css('overflow','hidden'); break;
+	
+	$$('#' + this._container.identify()+ '>.' + this.options.classNames.handle).each(function(el,i){
+		$(el).observe(this.options.trigger,this.toggle);
+		
+	},this);
+
+	$$('.' + this.options.classNames.content).each(function(el,i){
+		switch(this.options.direction){
+		  case 'vertical' : $(el).writeAttribute('data-zebheight',$(el).getHeight()).setStyle({'overflow':'hidden'}); break;
+		  case 'horizontal' : $(el).writeAttribute('data-zebwidth',$(el).getWidth()).setStyle({'overflow':'hidden'}); break;
 		}
 		
-	});
-	$('.' + this.options.classNames.handle).each(function(i,el){_scope.close(el)});
+	},this);
+	$$('.' + this.options.classNames.handle).each(function(el,i){this.close(el)},this);
 	
 	return this
 });
