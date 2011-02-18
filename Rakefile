@@ -82,7 +82,7 @@ namespace :dist do
     mkdir File.join(RELEASE_DIR,'scripty2')
     dist_from_sources(['scripty2/zebedee.js'])
     cp File.join(ROOT_DIR,'lib','prototype.js'), File.join(DIST_DIR,'scripty2','prototype.js')
-    cp File.join(ROOT_DIR,'lib','s2.js'), File.join(DIST_DIR,'scripty','s2.js')
+    cp File.join(ROOT_DIR,'lib','s2.js'), File.join(DIST_DIR,'scripty2','s2.js')
   end
 
   task :zepto do
