@@ -185,7 +185,8 @@ var zebedee = (function(container,options){
          * 
          * Defines the event that triggers the opening/closing of blocks. 
          **/
-		trigger:'click'
+		trigger:'click',
+		start:false
 	},options);
 	
 	//convert duration to milliseconds for emile
@@ -210,7 +211,10 @@ var zebedee = (function(container,options){
 		  else
 			  handles[i].attachEvent("on" + this.options.trigger, this.toggle);
 		  
-		  this.close(handles[i]);
+		  if(this.options.start && i == (this.options.start-1))
+			  this._addClass(el,this.options.classNames.handleActive);
+		  else
+			  this.close(handles[i]);
 	}
 		
 	return this
