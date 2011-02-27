@@ -162,7 +162,8 @@ var zebedee = (function(container,options){
          * 
          * Defines the event that triggers the opening/closing of blocks. 
          **/
-		trigger:'touchend'
+		trigger:'touchend',
+		start:false
 	},options);
 		
 	//initialize accordion
@@ -176,7 +177,12 @@ var zebedee = (function(container,options){
 		}
 		
 	});
-	$('.' + this.options.classNames.handle).each(function(i,el){_scope.close(el)});
+	$('.' + this.options.classNames.handle).each(function(i,el){
+		if(_scope.options.start && i == (_scope.options.start-1))
+			$(el).addClass(this.options.classNames.handleActive);
+		else
+			_scope.close(el);
+		});
 	
 	return this
 });
