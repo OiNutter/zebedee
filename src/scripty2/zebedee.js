@@ -100,10 +100,10 @@ var zebedee = (function(container,options){
 		var open = $$('#' + _scope._container.identify() + ">." + _scope.options.classNames.handleActive)[0];
 		if(!Object.isUndefined(open) && open!=e.findElement())
 			_scope.close($$('#' + _scope._container.identify() + ">." + _scope.options.classNames.handleActive)[0]);
-		if($(e.findElement()).hasClassName(_scope.options.classNames.handleActive))
-			_scope.close(e.findElement());
+		if($(e.findElement('.'+_scope.options.classNames.handle)).hasClassName(_scope.options.classNames.handleActive))
+			_scope.close(e.findElement('.'+_scope.options.classNames.handle));
 		else
-			_scope.open(e.findElement());
+			_scope.open(e.findElement('.'+_scope.options.classNames.handle));
 	};
 	
     /** section: Scripty 2
@@ -174,7 +174,8 @@ var zebedee = (function(container,options){
          * 
          * Defines the event that triggers the opening/closing of blocks. 
          **/
-		trigger:'touchend'
+		trigger:'click',
+		start:false
 	},options);
 		
 	//initialize accordion
@@ -193,7 +194,12 @@ var zebedee = (function(container,options){
 		}
 		
 	},this);
-	$$('.' + this.options.classNames.handle).each(function(el,i){this.close(el)},this);
+	$$('.' + this.options.classNames.handle).each(function(el,i){
+		if(this.options.start && i==(this.options.start-1))
+			$(el).addClassName(this.options.classNames.handleActive);
+		else
+			this.close(el);
+		},this);
 	
 	return this
 });
