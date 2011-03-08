@@ -56,7 +56,6 @@ var zebedee = (function(container,options){
 		var vars = [];
 	    for (var prop in obj)
 	      vars.push(obj[prop]);
-	    console.log(vars)
 	    return vars;
 	}
 	

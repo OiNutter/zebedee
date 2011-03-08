@@ -97,7 +97,8 @@ namespace :dist do
     puts 'Building emile Distribution...'
     mkdir File.join(DIST_DIR,'emile')
     mkdir File.join(RELEASE_DIR,'emile')
-    dist_from_sources(['emile/zebedee.js','emile/zeb-transitions.js'])
+    dist_from_sources(['emile/zebedee.js'])
+    dist_from_sources(['emile/zeb-transitions.js'])
     cp File.join(ROOT_DIR,'lib','emile.js'), File.join(DIST_DIR,'emile','emile.js')
   end
   
@@ -189,7 +190,7 @@ namespace :min_google do
       puts 'Minifying emile Distribution...'
       minify File.join(DIST_DIR,'emile','zebedee.js'), File.join(RELEASE_DIR,'emile','zebedee.min.js'), 'google'
       minify File.join(DIST_DIR,'emile','zeb-transitions.js'), File.join(RELEASE_DIR,'emile','zeb-transitions.min.js'), 'google'
-      minify File.join(ROOT_DIR,'lib','emile.js'), File.join(RELEASE_DIR,'scripty2','emile.min.js'), 'google'
+      minify File.join(ROOT_DIR,'lib','emile.js'), File.join(RELEASE_DIR,'emile','emile.min.js'), 'google'
    end
 end
 
@@ -211,7 +212,7 @@ desc "Generate a unified minified version of zebedee"
 task :unified => ['unified:default']
 namespace :unified do
   
-  task :default => ['unified:scriptaculous','unified:zepto']
+  task :default => ['unified:scriptaculous','unified:scripty2','unified:zepto','unified:emile']
 
   task :scriptaculous => ['dist:scriptaculous', 'min_google:scriptaculous'] do
     puts 'Unifying Scriptaculous Distribution...'    
@@ -230,8 +231,8 @@ namespace :unified do
   
   task :emile => ['dist:emile', 'min_google:emile'] do
     puts 'Unifying Emile distribution'
-    unify_distribution [File.join(DIST_DIR,'emile','emile.js'),File.join(DIST_DIR,'emile','zebedee.js')], 'scripty2/emile.zebedee.js' 
-    unify_distribution [File.join(DIST_DIR,'emile','emile.js'),File.join(DIST_DIR,'emile','zebedee.js'),File.join(DIST_DIR,'emile','zeb-transitions.js')], 'scripty2/emile.zebedee.full.js'
+    unify_distribution [File.join(DIST_DIR,'emile','emile.js'),File.join(DIST_DIR,'emile','zebedee.js')], 'emile/emile.zebedee.js' 
+    unify_distribution [File.join(DIST_DIR,'emile','emile.js'),File.join(DIST_DIR,'emile','zebedee.js'),File.join(DIST_DIR,'emile','zeb-transitions.js')], 'emile/emile.zebedee.full.js'
   end
 
 end
